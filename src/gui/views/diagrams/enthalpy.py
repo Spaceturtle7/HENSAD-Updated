@@ -22,7 +22,7 @@ class CompositeEnthalpyDialog(QDialog):
 
         slider = QSlider(self)
         self._slider = slider
-        slider.setValue(self._setup.dt)
+        slider.setValue(int(self._setup.dt))
         slider.setMinimum(5)
         slider.setMaximum(30)
         slider.setSingleStep(2)

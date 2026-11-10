@@ -64,7 +64,7 @@ class MaterialType(TypeBaseEnum):
     Ni = 'Nickel'
     Ti = 'Titanium'
     Al = 'Aluminum'
-    NONE = np.NaN
+    NONE = np.nan
 
 
 def _calculate_property(prop: float, c1: float, c2: float, c3: float) -> float:

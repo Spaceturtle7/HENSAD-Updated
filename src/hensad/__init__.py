@@ -357,31 +357,12 @@ def calculate_pinch_utilities(
 ) -> Tuple[float, float, float]:
     SFM = SummaryFrameMapper
 
-    n = len(summary)
+    n = len(summary) - 1
 
-    for i in range(n - 1, 0, -1):
-        # start from last block upwards
-        ex_heat = summary.at[i, SFM.EXHEAT.name]
-
-        if ex_heat <= 0 and i != (n - 1):
-            pinch_idx = i  # previous block
-            if summary.at[i + 1, SFM.EXHEAT.name] <= 0:
-                pinch_idx = None  # fall back in case last block has no exheat
-
-            break
-
-    if pinch_idx is None:
-        # There is no pinch
-        huq = np.abs(summary[SFM.EXHEAT.name].sum().item())
-        cuq = 0.0
-        hot_t_pinch = np.NaN
-    else:
-        huq = abs(summary.loc[0:pinch_idx, SFM.EXHEAT.name].sum().item())
-        cuq = abs(summary.loc[
-            (pinch_idx + 1):(n - 1),
-            SFM.EXHEAT.name
-        ].sum().item())
-        hot_t_pinch = summary.at[pinch_idx, SFM.TOUT.name]
+    huq = np.abs(np.min(summary[SFM.CUMHEAT.name]))
+    cuq = summary.at[n, SFM.CUMHEAT.name] + huq
+    pinch_idx = np.where(summary[SFM.CUMHEAT.name] == np.min(summary[SFM.CUMHEAT.name]))
+    hot_t_pinch = summary.at[pinch_idx[0][0], SFM.TOUT.name]
 
     return hot_t_pinch, huq, cuq
 
@@ -795,7 +776,7 @@ def _build_composite_borders(hot_composite: pd.DataFrame,
             # first border
             # temperatures of first border of iteration
             tH1 = hT
-            tC1 = np.NaN
+            tC1 = np.nan
 
             # temperatures of second border of iteration
             Qi, Ti, Qf, Tf = _search_enthalpy_interval(cQ, hTQ)
@@ -808,7 +789,7 @@ def _build_composite_borders(hot_composite: pd.DataFrame,
             Qi, Ti, Qf, Tf = _search_enthalpy_interval(hQ, cTQ)
             tC1 = _interpolate_temperature_in_interval(hQ, Qi, Ti, Qf, Tf)
 
-            tH2 = np.NaN
+            tH2 = np.nan
             tC2 = cT
 
         else:

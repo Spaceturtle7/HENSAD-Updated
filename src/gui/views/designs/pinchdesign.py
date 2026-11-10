@@ -558,13 +558,17 @@ class PinchDesignScene(QGraphicsScene):
         font = QFont()
         font.setBold(True)
 
+        dt = self._setup.dt
         hot_int = np.unique(
-            self._hot_str.loc[
+            [self._hot_str.loc[
                 :,
                 [STFCFM.TIN.name, STFCFM.TOUT.name]
-            ].values
+            ].values,
+            self._cold_str.loc[
+                :,
+                [STFCFM.TIN.name, STFCFM.TOUT.name]
+            ].values+dt]
         )
-        dt = self._setup.dt
         int_size = h / (hot_int.size - 1)
 
         for i, temp in enumerate(hot_int):
@@ -607,24 +611,34 @@ class PinchDesignScene(QGraphicsScene):
         if stream_type == 'hot':
             t_in = self._hot_str[STFCFM.TIN.name]
             t_out = self._hot_str[STFCFM.TOUT.name]
-            t_int = np.unique(
+            dt = self._setup.dt
+            t_int = np.unique([
                 self._hot_str.loc[
                     :,
                     [STFCFM.TIN.name, STFCFM.TOUT.name]
-                ].values
-            )
+                ].values,
+                self._cold_str.loc[
+                    :,
+                    [STFCFM.TIN.name, STFCFM.TOUT.name]
+                ].values+dt
+            ])
             axis_x_offset = 0
             color = Qt.red
             cataloguer = self._hot_strm_arrows
         elif stream_type == 'cold':
             t_in = self._cold_str[STFCFM.TIN.name]
             t_out = self._cold_str[STFCFM.TOUT.name]
-            t_int = np.unique(
+            dt = self._setup.dt
+            t_int = np.unique([
                 self._hot_str.loc[
                     :,
                     [STFCFM.TIN.name, STFCFM.TOUT.name]
+                ].values - dt,
+                self._cold_str.loc[
+                    :,
+                    [STFCFM.TIN.name, STFCFM.TOUT.name]
                 ].values
-            ) - self._setup.dt
+            ])
             axis_x_offset = (w + self._axis_width) / 2
             color = Qt.blue
             cataloguer = self._cold_strm_arrows
