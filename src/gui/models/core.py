@@ -77,7 +77,7 @@ class Setup(QObject):
     def dt(self) -> float:
         """Minimum approach temperature."""
         if not hasattr(self, '_dt'):
-            self._dt = np.NaN
+            self._dt = np.nan
         return self._dt
 
     @dt.setter
@@ -359,7 +359,7 @@ class Setup(QObject):
             # either the hot or cold frames are empty
 
             # set pinch and utilities (no pinch)
-            pinch, hur, cur = (np.NaN, 0.0, 0.0)
+            pinch, hur, cur = (np.nan, 0.0, 0.0)
 
             # composite enthalpy curves
             hTQ = EMPTY_COMPOSITE.copy(deep=True)
@@ -367,7 +367,7 @@ class Setup(QObject):
             segments = EMPTY_SEGMENT.copy(deep=True)
 
             # network area
-            area_network = np.NaN
+            area_network = np.nan
 
             # clear the summary and pinch stream infos
             summary = EMPTY_SUMMARY.copy(deep=True)
@@ -462,23 +462,24 @@ class Setup(QObject):
 
         new_film_row = {
             FCFM.ID.name: new_stream,
-            FCFM.COEF.name: np.NaN
+            FCFM.COEF.name: np.nan
         }
 
+        dnew_row = pd.DataFrame(data=[new_row])
+        dnew_film_row = pd.DataFrame(data=[new_film_row])
+
         if typ == 'hot':
-            hot = self.hot.append(new_row, ignore_index=True)
+            hot = pd.concat([self.hot, dnew_row], ignore_index=True)
             self.hot = hot
 
-            hot_film = self.hot_film_coef.append(new_film_row,
-                                                 ignore_index=True)
+            hot_film = pd.concat([self.hot_film_coef, dnew_film_row], ignore_index=True)
             self.hot_film_coef = hot_film
 
         elif typ == 'cold':
-            cold = self.cold.append(new_row, ignore_index=True)
+            cold = pd.concat([self.cold, dnew_row], ignore_index=True)
             self.cold = cold
 
-            cold_film = self.cold_film_coef.append(new_film_row,
-                                                   ignore_index=True)
+            cold_film = pd.concat([self.cold_film_coef, dnew_film_row], ignore_index=True)
             self.cold_film_coef = cold_film
 
     def delete_stream(self, index: int, typ: str) -> None:
@@ -789,7 +790,9 @@ class Setup(QObject):
             HEDFM.NSHELL.name: n_shells
         }
 
-        design = design.append(new_row, ignore_index=True)
+        dnew_row = pd.DataFrame(data=[new_row])
+
+        design = pd.concat([design, dnew_row], ignore_index=True)
         if des_type == 'abv':
             self.design_above = design
         else:
@@ -951,7 +954,9 @@ class Setup(QObject):
             HEDFM.NSHELL.name: 0
         }
 
-        design = design.append(new_row, ignore_index=True)
+        dnew_row = pd.DataFrame(data=[new_row])
+        
+        design = pd.concat([design, dnew_row], ignore_index=True)
         if des_type == 'abv':
             self.design_above = design
         else:
